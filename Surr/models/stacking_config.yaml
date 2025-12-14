@@ -1,0 +1,46 @@
+model_name: stacking_classifier
+target: EquipoGanador
+features:
+- gold_diff
+- xp_diff
+- towers_diff
+- dragons_diff
+- herald_diff
+- baron_diff
+- kills_diff
+- deaths_diff
+estimators:
+- name: lr
+  type: LogisticRegression
+  params:
+    max_iter: 1000
+- name: svc
+  type: SVC
+  params:
+    C: 100
+    gamma: 0.001
+    kernel: rbf
+    probability: true
+- name: xgb
+  type: XGBClassifier
+  params:
+    colsample_bytree: 0.8
+    gamma: 1
+    learning_rate: 0.1
+    max_depth: 3
+    n_estimators: 150
+    reg_alpha: 0.1
+    reg_lambda: 2
+    subsample: 1.0
+    use_label_encoder: false
+    eval_metric: logloss
+    random_state: 42
+final_estimator:
+  type: LogisticRegression
+  params:
+    max_iter: 1000
+cv: 5
+n_jobs: -1
+decision_thresholds:
+  surrender_alert: 0.2
+  safe_win: 0.7
