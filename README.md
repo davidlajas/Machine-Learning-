@@ -1,131 +1,123 @@
-Predicción de Partidas de League of Legends a 10 Minutos
-
-
-
-
+Proyecto Predicción de Ganador en Partidas de League of Legends
 Descripción
 
-Este proyecto tiene como objetivo predecir el equipo ganador en partidas de League of Legends a los 10 minutos utilizando datos de partidas clasificatorias. Incluye procesos de adquisición y limpieza de datos, ingeniería de features, entrenamiento de múltiples modelos de Machine Learning y despliegue del modelo final a través de una aplicación web interactiva.
+Este proyecto tiene como objetivo predecir el ganador de una partida de League of Legends a partir de datos del minuto 10 del juego. Se utilizan modelos de Machine Learning supervisados y no supervisados, así como un modelo de stacking para combinar los mejores resultados.
 
-Estructura del proyecto
-.
-├── data
-│   ├── raw/                 # Datos originales sin procesar
-│   ├── processed/           # Datos procesados listos para modelos
-│   ├── train/               # Datos de entrenamiento
-│   └── test/                # Datos de prueba
-├── notebooks/
-│   ├── 01_Fuentes.ipynb          # Adquisición y unión de datos
-│   ├── 02_LimpiezaEDA.ipynb      # Limpieza, transformaciones y EDA
-│   └── 03_Entrenamiento_Evaluacion.ipynb  # Entrenamiento y evaluación de modelos
-├── src/
-│   ├── data_processing.py       # Procesamiento de datos desde raw a processed y creación de datasets train/test
-│   ├── training.py              # Entrenamiento de modelos 
-│   └── evaluation.py            # Evaluación de modelos y generación de métricas
-├── models/
-│   ├── <nombre>.pkl      # Modelos individuales entrenados
-│   ├── final_model<nombre>.pkl          # Modelo final seleccionado
-│   └── model_config.yaml        # Configuración de hiperparámetros del modelo final
-├── app_streamlit/
-│   ├── app.py                   # Aplicación web interactiva para predicciones
-│   └── requirements.txt         # Dependencias para la aplicación web
-├── docs/                         # Documentación adicional (presentaciones, memoria)
-└── README.md                      # Este archivo
+Se procesan datos crudos, se realiza análisis exploratorio, se entrenan y evalúan múltiples modelos, y finalmente se guarda un modelo final para despliegue.
 
-Dataset
+Estructura de carpetas
+1. data/
 
-Fuente: OpenDataBay – League of Legends Ranked Games 10min
+Contiene los datos utilizados en el proyecto, organizados en subcarpetas:
 
-Filas: 9879
+raw/: Datos en formato original, sin procesar.
+Ejemplo: ranked_10min.csv
 
-Columnas originales: 40
+processed/: Datos procesados tras aplicar transformaciones, feature engineering y limpieza.
+Ejemplo: processed.csv
 
-Columnas procesadas:
+train/: Datos de entrenamiento generados a partir de los datos procesados.
+Ejemplo: train.csv
 
-equipo_ganador (0 = azul gana, 1 = rojo gana)
+test/: Datos de prueba generados a partir de los datos procesados.
+Ejemplo: test.csv
 
-equipo_primera_sangre
+2. notebooks/
 
-Diferencias de métricas clave entre equipos:
+Contiene los notebooks Jupyter del desarrollo del proyecto:
 
-asesinatos_dif, asistencias_dif, nivel_dif, minions_dif, torretas_dif, dragones_dif, heraldos_dif
+01_Fuentes.ipynb: Adquisición de datos y unión de fuentes.
 
-Flujo de trabajo
+02_LimpiezaEDA.ipynb: Limpieza de datos, transformaciones, feature engineering y análisis exploratorio con visualizaciones.
 
-Adquisición y preparación de datos:
+03_Entrenamiento_Evaluacion.ipynb: Entrenamiento de modelos supervisados y no supervisados, hiperparametrización y evaluación de métricas.
 
-Los notebooks 01_Fuentes.ipynb y 02_LimpiezaEDA.ipynb se encargan de unir las fuentes de datos, limpiar y transformar los datos, y generar las features necesarias.
+3. src/
 
-Procesamiento de datos (src/data_processing.py):
+Archivos Python que implementan funcionalidades clave:
 
-Convierte los datos de data/raw a data/processed.
+data_processing.py: Procesa los datos de data/raw/ y guarda los datasets en data/processed/.
 
-Genera nuevas columnas basadas en diferencias de métricas entre equipos.
+training.py: Entrena los modelos a partir de los datos procesados y guarda los datasets de train/ y test/.
 
-Entrenamiento de modelos (src/training.py):
+evaluation.py: Evalúa los modelos utilizando los datos de data/test/ y genera métricas de evaluación.
 
-Entrena varios modelos supervisados y no supervisados.
+4. models/
 
-Guarda modelos individuales en models/trained_model_n.pkl.
+Contiene los modelos entrenados y la configuración del modelo final:
 
-Crea train.csv y test.csv en data/train y data/test.
+trained_model_<nombre>.pkl – Modelos entrenados con identificadores únicos o nombres descriptivos.
+Ejemplos: trained_model_logistic_regression.pkl, trained_model_random_forest.pkl, trained_model_xgboost.pkl, etc.
 
-Evaluación de modelos (src/evaluation.py):
+final_model.pkl – Modelo final seleccionado tras la evaluación.
 
-Evalúa los modelos utilizando métricas como Accuracy, F1-score y ROC-AUC.
+stacking_config.yaml – Configuración del modelo final de stacking, incluyendo estimadores, hiperparámetros y umbrales de decisión.
 
-Selecciona el modelo final (final_model.pkl) y genera model_config.yaml.
+Nota: Mantener un registro de métricas de cada modelo en docs/ o en un archivo de seguimiento es recomendable.
 
-Despliegue (app_streamlit/app.py):
+5. app_streamlit/
 
-Permite hacer predicciones interactivas mediante una interfaz web.
+Contiene los archivos para desplegar el modelo final en una aplicación web:
 
-Muestra la probabilidad de victoria para cada equipo y alertas según el umbral.
+app.py: Código de la aplicación Streamlit para predecir el ganador de un equipo.
 
-Instalación y requisitos
+requirements.txt: Dependencias necesarias para ejecutar la aplicación.
 
-Clonar el repositorio:
+6. docs/
 
-git clone <https://github.com/davidlajas/min10-win-predict>
-cd <min10-win-predict>
+Documentación adicional del proyecto, incluyendo:
 
+Memorias y reportes.
 
-Instalar dependencias:
+Presentaciones de resultados.
 
-pip install -r app_streamlit/requirements.txt
+Seguimiento de métricas de modelos.
 
+Pipeline del proyecto
 
-Dependencias principales:
+Adquisición de datos: Se obtienen los datos crudos de partidas de League of Legends (minuto 10).
 
-pandas
-numpy
-scikit-learn
-xgboost
-tensorflow
-matplotlib
-seaborn
-pyyaml
-streamlit
+Procesamiento y limpieza: Se eliminan columnas irrelevantes, se renombra y unifica la nomenclatura, y se crean features derivados como diferencias entre equipos.
 
+Exploración de datos: Se analizan correlaciones, distribuciones y relaciones mediante gráficos y heatmaps.
 
-Ejecutar la aplicación web:
+Entrenamiento de modelos: Se entrenan múltiples modelos supervisados (Logistic Regression, Random Forest, Gradient Boosting, AdaBoost, XGBoost, KNN, SVC) y un modelo no supervisado (KMeans).
 
-streamlit run app_streamlit/app.py
+Hiperparametrización: Se optimizan hiperparámetros mediante GridSearchCV y RandomizedSearchCV.
+
+Evaluación de modelos: Se calculan métricas de rendimiento como Accuracy, Precision, Recall, F1 y ROC-AUC.
+
+Modelo final y stacking: Se crea un StackingClassifier combinando los mejores modelos y se guarda su configuración en YAML.
+
+Despliegue: Se prepara la aplicación Streamlit para hacer predicciones en tiempo real según el estado de la partida.
 
 Uso de la aplicación
 
-Selecciona tu equipo (azul o rojo) y la aplicación mostrará:
+Ejecutar la aplicación con Streamlit:
 
-Probabilidad de victoria de tu equipo.
+streamlit run app_streamlit/app.py
 
-Estado de alerta basado en los umbrales:
 
-< 0.2: alta probabilidad de perder ⚠️
+Seleccionar el equipo (azul o rojo) y obtener la probabilidad de victoria y un estado de alerta según umbrales definidos:
 
-0.7: alta probabilidad de ganar ✅
+Probabilidad < 0.2: ⚠️ Alta probabilidad de perder
 
-0.2 – 0.7: probabilidad intermedia 🔹
+Probabilidad > 0.7: ✅ Probabilidad de ganar alta
 
-Licencia
+Probabilidad intermedia: 🔹 Probabilidad intermedia
 
-MIT License – ver archivo LICENSE para más detalles.
+Dependencias principales
+
+pandas, numpy
+
+scikit-learn
+
+xgboost
+
+tensorflow / keras
+
+matplotlib, seaborn
+
+streamlit
+
+Todas las dependencias necesarias para la aplicación están listadas en app_streamlit/requirements.txt.
